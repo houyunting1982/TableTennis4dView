@@ -1,8 +1,5 @@
 ﻿using System.Text.Json;
 using AutoMapper;
-using TableTennis4dView.Application.Commands.Customers.Create;
-using TableTennis4dView.Application.Commands.Customers.Update;
-using TableTennis4dView.Application.DTOs;
 using TableTennis4dView.Application.DTOs.CameraView;
 using TableTennis4dView.Application.DTOs.Player;
 using TableTennis4dView.Application.DTOs.Technique;
@@ -14,9 +11,6 @@ namespace TableTennis4dView.Application.Mapper
     {
         public MappingProfile()
         {
-            CreateMap<Customer, CustomerResponse>().ReverseMap();
-            CreateMap<Customer, CreateCustomerCommand>().ReverseMap();
-            CreateMap<Customer, EditCustomerCommand>().ReverseMap();
             ConfigureCameraView();
             ConfigureTechnique();
             ConfigurePlayer();

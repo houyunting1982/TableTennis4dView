@@ -12,7 +12,7 @@ using TableTennis4dView.Infrastructure.Data;
 namespace TableTennis4dView.Infrastructure.Migrations
 {
     [DbContext(typeof(TableTennis4dViewAppContext))]
-    [Migration("20230424191633_INIT")]
+    [Migration("20230424201838_INIT")]
     partial class INIT
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -201,45 +201,6 @@ namespace TableTennis4dView.Infrastructure.Migrations
                     b.HasIndex("TechniqueId");
 
                     b.ToTable("CameraViews");
-                });
-
-            modelBuilder.Entity("TableTennis4dView.Core.Entities.Customer", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("TableTennis4dView.Core.Entities.Identity.ApplicationUser", b =>

@@ -5,7 +5,6 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
-using TableTennis4dView.Application.Commands.Customers.Create;
 using TableTennis4dView.Application.Commands.User.Create;
 using TableTennis4dView.Application.Common.Interfaces;
 using TableTennis4dView.Application.Mapper;
@@ -68,7 +67,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 //builder.Services.AddDbContext<AppContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register dependencies
-builder.Services.AddMediatR(typeof(CreateCustomerCommandHandler).GetTypeInfo().Assembly);
 builder.Services.AddMediatR(typeof(CreateUserCommandHandler).GetTypeInfo().Assembly);
 
 

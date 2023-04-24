@@ -14,7 +14,6 @@ namespace TableTennis4dView.Infrastructure.Data
 
         }
 
-        public DbSet<Customer> Customers { get; set; }
         public DbSet<Player> Players { get; set; }
         public DbSet<Technique> Techniques { get; set; }
         public DbSet<CameraView> CameraViews { get; set; }

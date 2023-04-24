@@ -53,13 +53,11 @@ namespace TableTennis4dView.Infrastructure
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddScoped(typeof(IQueryRepository<>), typeof(QueryRepository<>));
-            services.AddTransient<ICustomerQueryRepository, CustomerQueryRepository>();
             services.AddTransient<ITechniqueQueryRepository, TechniqueQueryRepository>();
             services.AddTransient<ICameraViewQueryRepository, CameraViewQueryRepository>();
             services.AddTransient<IPlayerQueryRepository, PlayerQueryRepository>();
             
             services.AddScoped(typeof(ICommandRepository<>), typeof(CommandRepository<>));
-            services.AddTransient<ICustomerCommandRepository, CustomerCommandRepository>();
             services.AddTransient<ITechniqueCommandRepository, TechniqueCommandRepository>();
             services.AddTransient<ICameraViewCommandRepository, CameraViewCommandRepository>();
             services.AddTransient<IPlayerCommandRepository, PlayerCommandRepository>();
