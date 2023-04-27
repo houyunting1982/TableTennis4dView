@@ -7,9 +7,11 @@ public class Player : BaseEntity
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public string? NickName { get; set; }
     public Sex Sex { get; set; }
     public Ownership Ownership { get; set; }
     public DominantHand DominantHand { get; set; }
+    public bool InvertedNameOrder { get; set; } = false;
     public virtual ICollection<Technique> Techniques { get; set; }
     public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; } 
 }

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using TableTennis4dView.Application.Commands.User.Create;
 using TableTennis4dView.Application.Commands.User.Delete;
@@ -14,7 +15,6 @@ namespace TableTennis4dView.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
    //[Authorize(Roles = "Admin, Management")]
     public class UserController : ControllerBase

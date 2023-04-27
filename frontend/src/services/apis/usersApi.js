@@ -1,9 +1,10 @@
 import axios from 'axios';
 
 export async function loginAsync(username, password) {
-    return axios(`https://localhost:7142/api/Auth/Login`, {
+    return axios(`/api/Auth/Login`, {
         method: 'POST',
         headers: {
+            'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json'
         },
         data: {
@@ -14,7 +15,7 @@ export async function loginAsync(username, password) {
 }
 
 export async function getUserDetail(userId, token) {
-    return axios(`https://localhost:7142/api/User/GetUserDetails/${userId}`, {
+    return axios(`/api/User/GetUserDetails/${userId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -25,7 +26,7 @@ export async function getUserDetail(userId, token) {
 
 
 export async function AddPlayerToUser(id, playerId, token) {
-    return axios(`https://localhost:7142/api/User/AssignUserPlayer`, {
+    return axios(`/api/User/AssignUserPlayer`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

@@ -5,17 +5,16 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.HttpOverrides;
 using TableTennis4dView.Application.Commands.User.Create;
 using TableTennis4dView.Application.Common.Interfaces;
 using TableTennis4dView.Application.Mapper;
 using TableTennis4dView.Infrastructure;
+using TableTennis4dView.Infrastructure.Data;
 using TableTennis4dView.Infrastructure.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -73,7 +72,7 @@ builder.Services.AddMediatR(typeof(CreateUserCommandHandler).GetTypeInfo().Assem
 
 builder.Services.AddCors(c =>
 {
-    c.AddPolicy("CorsPolicy", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    c.AddPolicy("CorsPolicy", options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
 
@@ -114,18 +113,21 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<TableTennis4dViewAppContext>();
+    context.Database.EnsureCreated();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Must be betwwen app.UseRouting() and app.UseEndPoints()
 // maintain middleware order
+
 app.UseCors("CorsPolicy");
 
 // Added for authentication

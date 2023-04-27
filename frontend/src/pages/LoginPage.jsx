@@ -23,10 +23,6 @@ const LoginPage = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            username: data.get('username'),
-            password: data.get('password')
-        });
         login(data.get('username'), data.get('password'));
     };
 

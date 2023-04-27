@@ -51,9 +51,6 @@ const ControlPanel = ({
 }) => {
     const [playStatus, setplayStatus] = useState(null);
     const [cameraIndicator, setcameraIndicator] = useState(0);
-    // indexSpeedMultiplier: 0,
-    //     playDirection: 0, // -1 : prev, 0 : Current, 1 : next
-    //         cameraMovingDirection: 0 // -1
 
     useEffect(() => {
         if (!enableJoyStickMode) {

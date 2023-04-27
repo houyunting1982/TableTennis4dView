@@ -61,15 +61,23 @@ const PlayPage = () => {
                 imagesPromiseList.push(preloadImage(images[cIdx][fIdx]));
             }
         }
-        await Promise.all(imagesPromiseList);
-
-        console.log("All pictures are loaded");
+        try {
+            await Promise.all(imagesPromiseList);
+            console.log("All pictures are loaded");
+        }
+        catch (err) {
+            console.log("Cancelled before finishing loading");
+        }
     }
 
-    const setCurrentTechnique = (techniqueId) => {
-        setSelectedTechnique(techniques.find(t => t.id == techniqueId));
+    const setCurrentTechnique = useCallback((techniqueId) => {
+        if (indexIntervalId) {
+            clearInterval(indexIntervalId);
+            setindexIntervalId(0);
+        }
+        setSelectedTechnique(techniques.find(t => t.id === parseInt(techniqueId)));
         setPlayStatus(initStatus);
-    }
+    }, [indexIntervalId, techniques, indexIntervalId])
 
     useEffect(() => {
         if (!selectedTechnique) {
@@ -87,7 +95,6 @@ const PlayPage = () => {
             const playerData = await getPlayerById(playerId, token);
             setPlayerName(`${playerData.data.firstName} ${playerData.data.lastName}`);
             const techniquesData = await getTechniquesbyPlayerId(playerId, token);
-            console.log(techniquesData.data)
             setTechniques(techniquesData.data)
             setSelectedTechnique(techniquesData.data[0]);
         }
@@ -97,13 +104,21 @@ const PlayPage = () => {
     const resetjoyStickParams = () => setjoyStickParams(initPlayParams);
 
     const goToPrevIndex = useCallback((step = 1) => {
+        if (indexIntervalId) {
+            clearInterval(indexIntervalId);
+            setindexIntervalId(0);
+        }
         setPlayStatus(prev => ({
             ...prev,
             currentIndex: prev.currentIndex - step < 0 ? 0 : prev.currentIndex - step,
         }));
-    }, []);
+    }, [indexIntervalId]);
 
     const goToNextIndex = useCallback((step = 1, loopMode = false) => {
+        if (indexIntervalId) {
+            clearInterval(indexIntervalId);
+            setindexIntervalId(0);
+        }
         setPlayStatus(prev => ({
             ...prev,
             currentIndex: prev.currentIndex + step >= boundary.maxIndex ?
@@ -111,7 +126,7 @@ const PlayPage = () => {
                     0 : boundary.maxIndex - 1
                 : prev.currentIndex + step,
         }));
-    }, [boundary.maxIndex]);
+    }, [boundary.maxIndex, indexIntervalId]);
 
     const goToPrevCamera = useCallback(() => {
         setPlayStatus(prev => ({
@@ -133,10 +148,7 @@ const PlayPage = () => {
             setindexIntervalId(0);
             return;
         }
-        setPlayStatus(prev => ({
-            ...prev,
-            currentIndex: 0
-        }));
+
         const newIntervalId = setInterval(() => goToNextIndex(1, true), playStatus.playSpeed);
         setindexIntervalId(newIntervalId);
     }, [goToNextIndex, indexIntervalId, playStatus.playSpeed]);
@@ -165,7 +177,6 @@ const PlayPage = () => {
     }
 
     const handleKeyPress = useCallback((e) => {
-        console.log(e.code)
         switch (e.code) {
             case 'ArrowRight':
                 if (!enableJoyStickMode) {
@@ -207,6 +218,9 @@ const PlayPage = () => {
     }, [goToNextCamera, goToPrevCamera, goToPrevIndex, goToNextIndex, goPlay, enableJoyStickMode, indexIntervalId])
 
     useEffect(() => {
+        if (!enableJoyStickMode) {
+            return;
+        }
         if (indexIntervalId) {
             clearInterval(indexIntervalId);
             setindexIntervalId(0);
@@ -225,7 +239,7 @@ const PlayPage = () => {
         } else if (joyStickParams.cameraMovingDirection === -1) {
             setcameraIntervalId(setInterval(() => goToPrevCamera(), 200));
         }
-    }, [joyStickParams, goToNextCamera, goToNextIndex, goToPrevCamera, goToPrevIndex])
+    }, [enableJoyStickMode, joyStickParams, goToNextCamera, goToNextIndex, goToPrevCamera, goToPrevIndex])
 
     useEffect(() => {
         // attach the event listener
@@ -236,44 +250,44 @@ const PlayPage = () => {
     }, [handleKeyPress]);
 
     return (
-        selectedTechnique ? 
-        <>
-            <Container>
-                <Header title={selectedTechnique.title} playerName={playerName} />
-                <Grid container alignItems="center" spacing={2}>
-                    <Grid item xs={3}>
-                        <Sidebar techniques={techniques} setCurrentTechnique={setCurrentTechnique} />
+        selectedTechnique ?
+            <>
+                <Container>
+                    <Header title={selectedTechnique.title} playerName={playerName} />
+                    <Grid container alignItems="center" spacing={2}>
+                        <Grid item xs={3}>
+                            <Sidebar techniques={techniques} setCurrentTechnique={setCurrentTechnique} />
+                        </Grid>
+                        <Grid item xs={9}>
+                            <Displayer
+                                imageSrc={getCurrentImageUrl()}
+                                enableJoyStickMode={enableJoyStickMode}
+                                setjoyStickParams={setjoyStickParams}
+                                resetjoyStickParams={resetjoyStickParams}
+                            />
+                        </Grid>
+                        <Grid xsOffset={3} xs={9}>
+                            <ControlPanel
+                                goToNextIndex={goToNextIndex}
+                                goToPrevIndex={goToPrevIndex}
+                                goToNextCamera={goToNextCamera}
+                                goToPrevCamera={goToPrevCamera}
+                                goPlay={goPlay}
+                                isPlaying={!!indexIntervalId}
+                                canGoNextCamera={canGoNextCamera}
+                                canGoPrevCamera={canGoPrevCamera}
+                                canGoNextIndex={canGoNextIndex}
+                                canGoPrevIndex={canGoPrevIndex}
+                                enableJoyStickMode={enableJoyStickMode}
+                                joyStickParams={joyStickParams}
+                            />
+                        </Grid>
                     </Grid>
-                    <Grid item xs={9}>
-                        <Displayer
-                            imageSrc={getCurrentImageUrl()}
-                            enableJoyStickMode={enableJoyStickMode}
-                            setjoyStickParams={setjoyStickParams}
-                            resetjoyStickParams={resetjoyStickParams}
-                        />
-                    </Grid>
-                    <Grid xsOffset={3} xs={9}>
-                        <ControlPanel
-                            goToNextIndex={goToNextIndex}
-                            goToPrevIndex={goToPrevIndex}
-                            goToNextCamera={goToNextCamera}
-                            goToPrevCamera={goToPrevCamera}
-                            goPlay={goPlay}
-                            isPlaying={!!indexIntervalId}
-                            canGoNextCamera={canGoNextCamera}
-                            canGoPrevCamera={canGoPrevCamera}
-                            canGoNextIndex={canGoNextIndex}
-                            canGoPrevIndex={canGoPrevIndex}
-                            enableJoyStickMode={enableJoyStickMode}
-                            joyStickParams={joyStickParams}
-                        />
-                    </Grid>
-                </Grid>
-                <Switch checked={enableJoyStickMode} />
-            </Container>
-        </>
-        :
-        <CircularProgress />
+                    {/* <Switch checked={enableJoyStickMode} /> */}
+                </Container>
+            </>
+            :
+            <CircularProgress />
     )
 }
 

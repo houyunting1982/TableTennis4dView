@@ -1,0 +1,16 @@
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/bin/Debug/net7.0/ImageExtractor
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/bin/Debug/net7.0/ImageExtractor.deps.json
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/bin/Debug/net7.0/ImageExtractor.runtimeconfig.json
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/bin/Debug/net7.0/ImageExtractor.dll
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/bin/Debug/net7.0/ImageExtractor.pdb
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.csproj.AssemblyReference.cache
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.GeneratedMSBuildEditorConfig.editorconfig
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.AssemblyInfoInputs.cache
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.AssemblyInfo.cs
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.csproj.CoreCompileInputs.cache
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.dll
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/refint/ImageExtractor.dll
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.pdb
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ImageExtractor.genruntimeconfig.cache
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/obj/Debug/net7.0/ref/ImageExtractor.dll
+/Users/yuntinghou/tt/TableTennis4dView/tools/ImageExtractor/bin/Debug/net7.0/Source.dat

@@ -1,5 +1,6 @@
 {
     "name": "demo",
+    "proxy" :"http://backend",
     "version": "0.1.0",
     "private": true,
     "homepage": "https://www.tabletennislab.com",

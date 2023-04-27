@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TableTennis4dView.Infrastructure.Data;
 
@@ -11,9 +12,10 @@ using TableTennis4dView.Infrastructure.Data;
 namespace TableTennis4dView.Infrastructure.Migrations
 {
     [DbContext(typeof(TableTennis4dViewAppContext))]
-    partial class TableTennis4dViewAppContextModelSnapshot : ModelSnapshot
+    [Migration("20230427004321_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

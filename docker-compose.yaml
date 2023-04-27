@@ -1,0 +1,26 @@
+version: "3.4"
+services:
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile.dev
+    image: tabletennis/backend
+    ports:
+      - "9999:80"
+    depends_on:
+      - mssql
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile.dev
+    image: tabletennis/frontend
+    ports:
+      - "3000:3000"
+  mssql:
+    image: mcr.microsoft.com/azure-sql-edge
+    ports:
+      - 1433:1433
+      - 1401:1401
+    environment:
+      SA_PASSWORD: "yuntingHou^Passw0rd"
+      ACCEPT_EULA: "Y"

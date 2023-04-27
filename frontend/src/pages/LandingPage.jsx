@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-
-import { CircularProgress, Stack, Switch } from '@mui/material';
+import { CircularProgress, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import LandingHeader from '../components/landing/LandingHeader';

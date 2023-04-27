@@ -1,0 +1,21 @@
+# Create a base image with code and restored NuGet packages
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as base
+WORKDIR /backend
+COPY */*.csproj ./
+RUN for file in $(ls *.csproj); do mkdir -p ${file%.*}/ && mv $file ${file%.*}/; done
+WORKDIR /backend
+COPY TableTennis4dView.sln ./
+RUN dotnet restore 
+COPY ./ ./
+
+# Build application code
+FROM base as build
+WORKDIR /backend/TableTennis4dView.API
+RUN dotnet publish -c Release -o /artifacts # TBD the publish is failing with --no-restore
+
+# Create runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as runtime
+ENV ASPNETCORE_ENVIRONMENT Development
+WORKDIR /app
+COPY --from=build /artifacts .
+ENTRYPOINT ["dotnet", "TableTennis4dView.API.dll"]
