@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using TableTennis4dView.Application.Commands.User.Create;
 using TableTennis4dView.Application.Common.Interfaces;
 using TableTennis4dView.Application.Mapper;
@@ -121,6 +122,7 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<TableTennis4dViewAppContext>();
     context.Database.EnsureCreated();
+    //context.Database.Migrate();
 }
 
 //app.UseHttpsRedirection();

@@ -8,8 +8,8 @@ while ((line = sr.ReadLine()) != null)
 {
     var fileNane = line.Split("/")[4];
     var splitFileName = fileNane.Replace(".jpg", "").Split("-");
-    var key = int.Parse(splitFileName[4].Replace("C", ""));
-    var innerKey = int.Parse(splitFileName[5]);
+    var key = int.Parse(splitFileName[5].Replace("C", ""));
+    var innerKey = int.Parse(splitFileName[6]);
     if (nestedDict.ContainsKey(key))
     {
         nestedDict[key][innerKey] = line;
