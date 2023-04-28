@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import Displayer from '../components/player/Displayer';
 import Sidebar from '../components/player/Sidebar';
 import Header from '../components/player/Header';
-import { CircularProgress, Stack, Switch } from '@mui/material';
+import { CircularProgress, InputAdornment, Stack, TextField } from '@mui/material';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import ControlPanel from '../components/player/ControlPanel';
@@ -21,10 +22,15 @@ const Container = styled(Stack)({
     padding: '0 50px'
 });
 
+const SearchBarField = styled(TextField)({
+    input: { color: '#fff' },
+    backgroundColor: "#444",
+    borderRadius: '5px'
+});
+
 const initStatus = {
     currentCamera: 0,
-    currentIndex: 0,
-    playSpeed: 20,
+    currentIndex: 0
 }
 
 const initBoundary = {
@@ -38,7 +44,6 @@ const initPlayParams = {
     cameraMovingDirection: 0 // -1 : prev, 0 : Current, 1 : next
 }
 
-
 const PlayPage = () => {
     const { userId, token } = useAuth();
     const { playerId } = useParams();
@@ -47,13 +52,14 @@ const PlayPage = () => {
 
     const [indexIntervalId, setindexIntervalId] = useState(0);
     const [cameraIntervalId, setcameraIntervalId] = useState(0);
-    const [playerName, setPlayerName] = useState(null)
-    const [joyStickParams, setjoyStickParams] = useState(initPlayParams)
-    const [enableJoyStickMode, setenableJoyStickMode] = useState(false)
+    const [playerName, setPlayerName] = useState(null);
+    const [joyStickParams, setjoyStickParams] = useState(initPlayParams);
+    const [enableJoyStickMode, setenableJoyStickMode] = useState(false);
     const [techniques, setTechniques] = useState([]);
 
     const [selectedTechnique, setSelectedTechnique] = useState(null);
-
+    const [filterCondition, setFilterCondition] = useState(null);
+    const [playSpeed, setPlaySpeed] = useState(20);
     const preLoadImages = async (images) => {
         const imagesPromiseList = [];
         for (let cIdx = 0; cIdx < images.length; cIdx++) {
@@ -149,9 +155,9 @@ const PlayPage = () => {
             return;
         }
 
-        const newIntervalId = setInterval(() => goToNextIndex(1, true), playStatus.playSpeed);
+        const newIntervalId = setInterval(() => goToNextIndex(1, true), playSpeed);
         setindexIntervalId(newIntervalId);
-    }, [goToNextIndex, indexIntervalId, playStatus.playSpeed]);
+    }, [goToNextIndex, indexIntervalId, playSpeed]);
 
     const getCurrentImageUrl = () => {
         if (!selectedTechnique) {
@@ -179,43 +185,53 @@ const PlayPage = () => {
     const handleKeyPress = useCallback((e) => {
         switch (e.code) {
             case 'ArrowRight':
-                if (!enableJoyStickMode) {
-                    goToNextCamera();
-                }
+                goToNextCamera();
                 break;
             case 'ArrowLeft':
-                if (!enableJoyStickMode) {
-                    goToPrevCamera();
-                }
+                goToPrevCamera();
                 break;
             case 'ArrowUp':
-                if (!enableJoyStickMode) {
-                    goToPrevIndex();
-                }
+                goToPrevIndex();
                 break;
             case 'ArrowDown':
-                if (!enableJoyStickMode) {
-                    goToNextIndex();
-                }
+                goToNextIndex();
                 break;
             case 'Space':
                 e.preventDefault();
                 goPlay();
                 break;
-            case 'ShiftLeft':
-            case 'ShiftRight':
-                setenableJoyStickMode(prev => !prev);
+            case 'Digit1':
                 if (indexIntervalId) {
                     clearInterval(indexIntervalId);
                     setindexIntervalId(0);
-                    setPlayStatus(initStatus);
-                    return;
                 }
+                setPlaySpeed(20);
+                break;
+            case 'Digit2':
+                if (indexIntervalId) {
+                    clearInterval(indexIntervalId);
+                    setindexIntervalId(0);
+                }
+                setPlaySpeed(40);
+                break;
+            case 'Digit3':
+                if (indexIntervalId) {
+                    clearInterval(indexIntervalId);
+                    setindexIntervalId(0);
+                }
+                setPlaySpeed(80);
+                break;
+            case 'Digit4':
+                if (indexIntervalId) {
+                    clearInterval(indexIntervalId);
+                    setindexIntervalId(0);
+                }
+                setPlaySpeed(200);
                 break;
             default:
                 break;
         }
-    }, [goToNextCamera, goToPrevCamera, goToPrevIndex, goToNextIndex, goPlay, enableJoyStickMode, indexIntervalId])
+    }, [goToNextCamera, goToPrevCamera, goToPrevIndex, goToNextIndex, goPlay, indexIntervalId])
 
     useEffect(() => {
         if (!enableJoyStickMode) {
@@ -256,7 +272,27 @@ const PlayPage = () => {
                     <Header title={selectedTechnique.title} playerName={playerName} />
                     <Grid container alignItems="center" spacing={2}>
                         <Grid item xs={3}>
-                            <Sidebar techniques={techniques} setCurrentTechnique={setCurrentTechnique} />
+                            <Stack spacing={3} alignItems="center">
+                                <SearchBarField
+                                    id="search"
+                                    type="search"
+                                    value={filterCondition}
+                                    onChange={e => setFilterCondition(e.target.value)}
+                                    sx={{width: '280px'}}
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <FilterAltIcon sx={{color: 'white'}}/>
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    onFocus={(event) => {
+                                        event.target.setAttribute('autocomplete', 'off');
+                                        console.log(event.target.autocomplete);
+                                      }}
+                                />
+                                <Sidebar techniques={techniques} selectedTechnique={selectedTechnique} setCurrentTechnique={setCurrentTechnique} filterCondition={filterCondition}/>
+                            </Stack>
                         </Grid>
                         <Grid item xs={9}>
                             <Displayer
@@ -283,7 +319,6 @@ const PlayPage = () => {
                             />
                         </Grid>
                     </Grid>
-                    {/* <Switch checked={enableJoyStickMode} /> */}
                 </Container>
             </>
             :

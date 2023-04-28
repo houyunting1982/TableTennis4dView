@@ -1,7 +1,7 @@
 import React from 'react'
 import { Stack } from '@mui/system'
 import { styled } from '@mui/material/styles';
-import { Box, Button } from '@mui/material';
+import { Box, Button, InputAdornment, TextField } from '@mui/material';
 
 const Item = styled(Button)(({ theme }) => ({
     background: 'linear-gradient(0deg, #363636 0%, #b1b1b1 100%)',
@@ -44,15 +44,29 @@ const Holder = styled(Box)({
     }
 })
 
-const Sidebar = ({ techniques, setCurrentTechnique }) => {
+const Sidebar = ({ techniques, setCurrentTechnique, selectedTechnique, filterCondition }) => {
     const handleClick = (e) => {
         setCurrentTechnique(e.target.value)
+    }
+    if (filterCondition) {
+        techniques = techniques.filter(t => t.title.toLowerCase().includes(filterCondition.toLowerCase()));
     }
     return (
         <Holder>
             <Stack spacing={1}>
                 {
-                    techniques.map(technique => <Item onClick={handleClick} value={technique.id} key={technique.id} >{technique.title}</Item>)
+                    techniques.map(technique =>
+                        selectedTechnique.id === technique.id ?
+                            <Item
+                                key={technique.id} 
+                                sx={{
+                                    background: 'linear-gradient(0deg, #363636 0%, #b1b1b1 100%)',
+                                    filter: 'invert(0.85)',
+                                    color: 'white',
+                                    cursor: "auto"
+                                }}
+                            >{technique.title}</Item>
+                            : <Item onClick={handleClick} value={technique.id} key={technique.id}>{technique.title}</Item>)
                 }
             </Stack>
         </Holder>
