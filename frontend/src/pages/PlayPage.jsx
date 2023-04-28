@@ -83,6 +83,7 @@ const PlayPage = () => {
         }
         setSelectedTechnique(techniques.find(t => t.id === parseInt(techniqueId)));
         setPlayStatus(initStatus);
+        setPlaySpeed(20);
     }, [indexIntervalId, techniques, indexIntervalId])
 
     useEffect(() => {
