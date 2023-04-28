@@ -315,6 +315,7 @@ const PlayPage = () => {
                                 canGoPrevCamera={canGoPrevCamera}
                                 canGoNextIndex={canGoNextIndex}
                                 canGoPrevIndex={canGoPrevIndex}
+                                playSpeed={playSpeed}
                                 enableJoyStickMode={enableJoyStickMode}
                                 joyStickParams={joyStickParams}
                             />

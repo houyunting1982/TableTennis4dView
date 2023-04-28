@@ -1,6 +1,6 @@
 import { Button, styled, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -42,6 +42,7 @@ const ControlPanel = ({
     goToPrevCamera,
     goPlay,
     isPlaying,
+    playSpeed,
     canGoNextCamera,
     canGoPrevCamera,
     canGoNextIndex,
@@ -53,24 +54,21 @@ const ControlPanel = ({
     const [cameraIndicator, setcameraIndicator] = useState(0);
 
     useEffect(() => {
-        if (!enableJoyStickMode) {
-            return;
+        switch(playSpeed) {
+            case 40:
+                setplayStatus('FORWARD 50%')
+                break;
+            case 80:
+                setplayStatus('FORWARD 25%')
+                break;
+            case 200:
+                setplayStatus('FORWARD 10%')
+                break;
+            default:
+                setplayStatus('FORWARD 100%')
+                break;
         }
-
-        if (!joyStickParams.playDirection) {
-            setplayStatus(null);
-        } else {
-            const percentage = `${100 * joyStickParams.indexSpeedMultiplier}%`
-            if (joyStickParams.playDirection > 0) {
-                setplayStatus(`FORWARD ${percentage}`)
-            } else {
-                setplayStatus(`REVERSE ${percentage}`)
-            }
-        }
-        setcameraIndicator(joyStickParams.cameraMovingDirection);
-
-    }, [joyStickParams, enableJoyStickMode])
-
+    }, [playSpeed])
     return (
         <>
             <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="flex-end" sx={{ height: '2.5em' }}>
@@ -89,7 +87,7 @@ const ControlPanel = ({
                 </Stack>
 
                 <Stack>
-                    {enableJoyStickMode && playStatus && isPlaying && <ActionLabel variant='subtitle1'>{playStatus}</ActionLabel>}
+                    {playStatus && isPlaying && <ActionLabel variant='subtitle1'>{playStatus}</ActionLabel>}
                     <ControlButton variant={isPlaying ? "contained" : "outlined"} color='inherit' onClick={() => goPlay()}>
                         {
                             isPlaying ? <ReplayIcon sx={{ color: '#363636' }} /> :
