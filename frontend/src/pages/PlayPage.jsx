@@ -43,6 +43,7 @@ const initPlayParams = {
     playDirection: 0, // -1 : prev, 0 : Current, 1 : next
     cameraMovingDirection: 0 // -1 : prev, 0 : Current, 1 : next
 }
+const defaultSpeed = 15;
 
 const PlayPage = () => {
     const { userId, token } = useAuth();
@@ -59,7 +60,7 @@ const PlayPage = () => {
 
     const [selectedTechnique, setSelectedTechnique] = useState(null);
     const [filterCondition, setFilterCondition] = useState(null);
-    const [playSpeed, setPlaySpeed] = useState(20);
+    const [playSpeed, setPlaySpeed] = useState(defaultSpeed);
     const preLoadImages = async (images) => {
         const imagesPromiseList = [];
         for (let cIdx = 0; cIdx < images.length; cIdx++) {
@@ -191,10 +192,10 @@ const PlayPage = () => {
             case 'ArrowLeft':
                 goToPrevCamera();
                 break;
-            case 'ArrowUp':
+            case 'ArrowDown':
                 goToPrevIndex();
                 break;
-            case 'ArrowDown':
+            case 'ArrowUp':
                 goToNextIndex();
                 break;
             case 'Space':
@@ -206,28 +207,28 @@ const PlayPage = () => {
                     clearInterval(indexIntervalId);
                     setindexIntervalId(0);
                 }
-                setPlaySpeed(20);
+                setPlaySpeed(defaultSpeed);
                 break;
             case 'Digit2':
                 if (indexIntervalId) {
                     clearInterval(indexIntervalId);
                     setindexIntervalId(0);
                 }
-                setPlaySpeed(40);
+                setPlaySpeed(defaultSpeed * 2);
                 break;
             case 'Digit3':
                 if (indexIntervalId) {
                     clearInterval(indexIntervalId);
                     setindexIntervalId(0);
                 }
-                setPlaySpeed(80);
+                setPlaySpeed(defaultSpeed * 4);
                 break;
             case 'Digit4':
                 if (indexIntervalId) {
                     clearInterval(indexIntervalId);
                     setindexIntervalId(0);
                 }
-                setPlaySpeed(200);
+                setPlaySpeed(defaultSpeed * 10);
                 break;
             default:
                 break;
@@ -318,6 +319,7 @@ const PlayPage = () => {
                                 playSpeed={playSpeed}
                                 enableJoyStickMode={enableJoyStickMode}
                                 joyStickParams={joyStickParams}
+                                defaultSpeed={defaultSpeed}
                             />
                         </Grid>
                     </Grid>

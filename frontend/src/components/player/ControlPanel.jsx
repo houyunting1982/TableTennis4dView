@@ -48,20 +48,21 @@ const ControlPanel = ({
     canGoNextIndex,
     canGoPrevIndex,
     enableJoyStickMode,
-    joyStickParams
+    joyStickParams,
+    defaultSpeed,
 }) => {
     const [playStatus, setplayStatus] = useState(null);
     const [cameraIndicator, setcameraIndicator] = useState(0);
 
     useEffect(() => {
         switch(playSpeed) {
-            case 40:
+            case defaultSpeed * 2:
                 setplayStatus('FORWARD 50%')
                 break;
-            case 80:
+            case defaultSpeed * 4:
                 setplayStatus('FORWARD 25%')
                 break;
-            case 200:
+            case defaultSpeed * 10:
                 setplayStatus('FORWARD 10%')
                 break;
             default:
