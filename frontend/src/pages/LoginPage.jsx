@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 // import FormControlLabel from '@mui/material/FormControlLabel';
@@ -20,10 +20,16 @@ const LogInTextField = styled(TextField)({
 
 const LoginPage = () => {
     const { login, authed } = useAuth();
-    const handleSubmit = (event) => {
+    const [error, setError] = useState(null)
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setError(null);
         const data = new FormData(event.currentTarget);
-        login(data.get('username'), data.get('password'));
+        const error = await login(data.get('username'), data.get('password'));
+        if (error != null) {
+            const errorMessage = error.data.split(":")[1].split("\n")[0];
+            setError(errorMessage);
+        }
     };
 
     return authed ? (
@@ -70,6 +76,11 @@ const LoginPage = () => {
                         placeholder='Password'
                         autoComplete='off'
                     />
+                        {
+                            error && <Typography variant='body1' color={"#d32f2f"}>
+                                {error}
+                            </Typography>
+                        }
                     {/* <FormControlLabel
                         control={<Checkbox value='remember' color='primary' />}
                         label='Remember me'

@@ -1,6 +1,6 @@
 import { Button, styled, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -47,13 +47,10 @@ const ControlPanel = ({
     canGoPrevCamera,
     canGoNextIndex,
     canGoPrevIndex,
-    enableJoyStickMode,
-    joyStickParams,
     defaultSpeed,
+    currentCamera
 }) => {
     const [playStatus, setplayStatus] = useState(null);
-    const [cameraIndicator, setcameraIndicator] = useState(0);
-
     useEffect(() => {
         switch(playSpeed) {
             case defaultSpeed * 2:
@@ -69,20 +66,20 @@ const ControlPanel = ({
                 setplayStatus('FORWARD 100%')
                 break;
         }
-    }, [playSpeed])
+    }, [playSpeed, defaultSpeed])
     return (
         <>
             <Stack direction="row" spacing={2} justifyContent="space-evenly" alignItems="flex-end" sx={{ height: '2.5em' }}>
                 <Stack>
-                    {enableJoyStickMode && cameraIndicator < 0 && !canGoPrevCamera() && <ActionLabel variant='subtitle1' display={false}>ROTATE LEFT</ActionLabel>}
-                    <ControlButton color='inherit' onClick={() => goToPrevCamera()} disabled={canGoPrevCamera() || enableJoyStickMode}>
+                    <ControlButton color='inherit' onClick={() => goToPrevCamera()} disabled={canGoPrevCamera()}>
                         <ArrowBackIosNewIcon />
+                        {!canGoPrevCamera() && <Typography variant='body1' sx={{ mx: 2 }}>{currentCamera}</Typography>}
                         <CameraAltIcon />
                     </ControlButton>
                 </Stack>
 
                 <Stack>
-                    <ControlButton color='inherit' onClick={() => goToPrevIndex()} disabled={canGoPrevIndex() || enableJoyStickMode}>
+                    <ControlButton color='inherit' onClick={() => goToPrevIndex()} disabled={canGoPrevIndex()}>
                         <ArrowLeftIcon />
                     </ControlButton>
                 </Stack>
@@ -98,15 +95,15 @@ const ControlPanel = ({
                 </Stack>
 
                 <Stack>
-                    <ControlButton color='inherit' onClick={() => goToNextIndex()} disabled={canGoNextIndex() || enableJoyStickMode}>
+                    <ControlButton color='inherit' onClick={() => goToNextIndex()} disabled={canGoNextIndex()}>
                         <ArrowRightIcon />
                     </ControlButton>
                 </Stack>
 
                 <Stack>
-                    {enableJoyStickMode && cameraIndicator > 0 && !canGoNextCamera() && <ActionLabel variant='subtitle1'>ROTATE RIGHT</ActionLabel>}
-                    <ControlButton color='inherit' onClick={() => goToNextCamera()} disabled={canGoNextCamera() || enableJoyStickMode}>
+                    <ControlButton color='inherit' onClick={() => goToNextCamera()} disabled={canGoNextCamera()}>
                         <CameraAltIcon />
+                        {!canGoNextCamera() && <Typography variant='body1' sx={{ mx: 2 }}>{currentCamera + 2}</Typography>}
                         <ArrowForwardIosIcon />
                     </ControlButton>
                 </Stack>

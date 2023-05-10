@@ -1,6 +1,7 @@
 import React, { useState, createContext, useContext } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { loginAsync } from '../services/apis/usersApi';
+import { isExpired } from 'react-jwt';
 
 const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
@@ -9,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const value = getItem('credential');
     const valueJson = value ? JSON.parse(value) : {};
 
-    const [authed, setAuthed] = useState(!!valueJson.name);
+    const [authed, setAuthed] = useState(valueJson.token && !isExpired(valueJson.token));
     const [userName, setUserName] = useState(valueJson.name);
     const [token, setToken] = useState(valueJson.token);
     const [userId, setUserId] = useState(valueJson.userId);
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
             setItem('credential', JSON.stringify({ name, token, userId }));
             setAuthed(true);
         } catch (error) {
-            console.log(error);
+            return error.response;
         }
     };
 

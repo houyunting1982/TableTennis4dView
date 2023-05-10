@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Displayer from '../components/player/Displayer';
 import Sidebar from '../components/player/Sidebar';
 import Header from '../components/player/Header';
-import { CircularProgress, InputAdornment, Stack, TextField } from '@mui/material';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import { CircularProgress, Stack, TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import ControlPanel from '../components/player/ControlPanel';
@@ -38,29 +37,22 @@ const initBoundary = {
     maxIndex: 0
 }
 
-const initPlayParams = {
-    indexSpeedMultiplier: 0,
-    playDirection: 0, // -1 : prev, 0 : Current, 1 : next
-    cameraMovingDirection: 0 // -1 : prev, 0 : Current, 1 : next
-}
-const defaultSpeed = 15;
+const defaultSpeed = 17;
 
 const PlayPage = () => {
-    const { userId, token } = useAuth();
+    const { token } = useAuth();
     const { playerId } = useParams();
     const [playStatus, setPlayStatus] = useState(initStatus);
     const [boundary, setBoundary] = useState(initBoundary);
 
     const [indexIntervalId, setindexIntervalId] = useState(0);
-    const [cameraIntervalId, setcameraIntervalId] = useState(0);
     const [playerName, setPlayerName] = useState(null);
-    const [joyStickParams, setjoyStickParams] = useState(initPlayParams);
-    const [enableJoyStickMode, setenableJoyStickMode] = useState(false);
     const [techniques, setTechniques] = useState([]);
 
     const [selectedTechnique, setSelectedTechnique] = useState(null);
-    const [filterCondition, setFilterCondition] = useState(null);
+    const [filterCondition, setFilterCondition] = useState("");
     const [playSpeed, setPlaySpeed] = useState(defaultSpeed);
+    const [isPlaying, setIsPlaying] = useState(false);
     const preLoadImages = async (images) => {
         const imagesPromiseList = [];
         for (let cIdx = 0; cIdx < images.length; cIdx++) {
@@ -77,6 +69,14 @@ const PlayPage = () => {
         }
     }
 
+    const cleanPlayStatus = (indexIntervalId, needToUpdatePlaying = false) => {
+        clearInterval(indexIntervalId);
+        setindexIntervalId(0);
+        if (needToUpdatePlaying) {
+            setIsPlaying(false);
+        }
+    }
+
     const setCurrentTechnique = useCallback((techniqueId) => {
         if (indexIntervalId) {
             clearInterval(indexIntervalId);
@@ -85,31 +85,7 @@ const PlayPage = () => {
         setSelectedTechnique(techniques.find(t => t.id === parseInt(techniqueId)));
         setPlayStatus(initStatus);
         setPlaySpeed(20);
-    }, [indexIntervalId, techniques, indexIntervalId])
-
-    useEffect(() => {
-        if (!selectedTechnique) {
-            return;
-        }
-        const maxCamera = selectedTechnique.cameraViews.length;
-        const maxIndex = selectedTechnique.cameraViews[0].parsedImages.length;
-        setBoundary({ maxCamera, maxIndex });
-        const cameraImages = selectedTechnique.cameraViews.map(cv => cv.parsedImages);
-        preLoadImages(cameraImages);
-    }, [selectedTechnique])
-
-    useEffect(() => {
-        const init = async () => {
-            const playerData = await getPlayerById(playerId, token);
-            setPlayerName(`${playerData.data.firstName} ${playerData.data.lastName}`);
-            const techniquesData = await getTechniquesbyPlayerId(playerId, token);
-            setTechniques(techniquesData.data)
-            setSelectedTechnique(techniquesData.data[0]);
-        }
-        init();
-    }, [setPlayerName, setTechniques])
-
-    const resetjoyStickParams = () => setjoyStickParams(initPlayParams);
+    }, [indexIntervalId, techniques])
 
     const goToPrevIndex = useCallback((step = 1) => {
         if (indexIntervalId) {
@@ -152,14 +128,13 @@ const PlayPage = () => {
 
     const goPlay = useCallback(() => {
         if (indexIntervalId) {
-            clearInterval(indexIntervalId);
-            setindexIntervalId(0);
+            cleanPlayStatus(indexIntervalId, true);
             return;
         }
-
         const newIntervalId = setInterval(() => goToNextIndex(1, true), playSpeed);
         setindexIntervalId(newIntervalId);
-    }, [goToNextIndex, indexIntervalId, playSpeed]);
+        setIsPlaying(true);
+    }, [goToNextIndex, setIsPlaying, setindexIntervalId, indexIntervalId, playSpeed]);
 
     const getCurrentImageUrl = () => {
         if (!selectedTechnique) {
@@ -200,64 +175,43 @@ const PlayPage = () => {
                 break;
             case 'Space':
                 e.preventDefault();
-                goPlay();
+                if (indexIntervalId) {
+                    cleanPlayStatus(indexIntervalId, true);
+                    return;
+                }
+                const newIntervalId = setInterval(() => goToNextIndex(1, true), playSpeed);
+                setindexIntervalId(newIntervalId);
+                setIsPlaying(true);
                 break;
             case 'Digit1':
                 if (indexIntervalId) {
-                    clearInterval(indexIntervalId);
-                    setindexIntervalId(0);
+                    cleanPlayStatus(indexIntervalId);
                 }
                 setPlaySpeed(defaultSpeed);
                 break;
             case 'Digit2':
                 if (indexIntervalId) {
-                    clearInterval(indexIntervalId);
-                    setindexIntervalId(0);
+                    cleanPlayStatus(indexIntervalId);
                 }
                 setPlaySpeed(defaultSpeed * 2);
                 break;
             case 'Digit3':
                 if (indexIntervalId) {
-                    clearInterval(indexIntervalId);
-                    setindexIntervalId(0);
+                    cleanPlayStatus(indexIntervalId);
                 }
                 setPlaySpeed(defaultSpeed * 4);
                 break;
             case 'Digit4':
                 if (indexIntervalId) {
-                    clearInterval(indexIntervalId);
-                    setindexIntervalId(0);
+                    cleanPlayStatus(indexIntervalId);
                 }
                 setPlaySpeed(defaultSpeed * 10);
                 break;
             default:
                 break;
         }
-    }, [goToNextCamera, goToPrevCamera, goToPrevIndex, goToNextIndex, goPlay, indexIntervalId])
-
-    useEffect(() => {
-        if (!enableJoyStickMode) {
-            return;
-        }
-        if (indexIntervalId) {
-            clearInterval(indexIntervalId);
-            setindexIntervalId(0);
-        }
-        if (cameraIntervalId) {
-            clearInterval(cameraIntervalId);
-            setcameraIntervalId(0);
-        }
-        if (joyStickParams.playDirection === 1) {
-            setindexIntervalId(setInterval(() => goToNextIndex(), Math.ceil(30 / joyStickParams.indexSpeedMultiplier)));
-        } else if (joyStickParams.playDirection === -1) {
-            setindexIntervalId(setInterval(() => goToPrevIndex(), Math.ceil(30 / joyStickParams.indexSpeedMultiplier)));
-        }
-        if (joyStickParams.cameraMovingDirection === 1) {
-            setcameraIntervalId(setInterval(() => goToNextCamera(), 200));
-        } else if (joyStickParams.cameraMovingDirection === -1) {
-            setcameraIntervalId(setInterval(() => goToPrevCamera(), 200));
-        }
-    }, [enableJoyStickMode, joyStickParams, goToNextCamera, goToNextIndex, goToPrevCamera, goToPrevIndex])
+    }, [goToNextCamera, goToPrevCamera, goToPrevIndex, goToNextIndex, indexIntervalId, playSpeed
+    ])
 
     useEffect(() => {
         // attach the event listener
@@ -266,6 +220,35 @@ const PlayPage = () => {
             document.removeEventListener('keydown', handleKeyPress);
         };
     }, [handleKeyPress]);
+
+    useEffect(() => {
+        const init = async () => {
+            const playerData = await getPlayerById(playerId, token);
+            setPlayerName(`${playerData.data.firstName} ${playerData.data.lastName}`);
+            const techniquesData = await getTechniquesbyPlayerId(playerId, token);
+            setTechniques(techniquesData.data)
+            setSelectedTechnique(techniquesData.data[0]);
+        }
+        init();
+    }, [setPlayerName, setTechniques, playerId, token]);
+
+    useEffect(() => {
+        if (!selectedTechnique) {
+            return;
+        }
+        const maxCamera = selectedTechnique.cameraViews.length;
+        const maxIndex = selectedTechnique.cameraViews[0].parsedImages.length;
+        setBoundary({ maxCamera, maxIndex });
+        const cameraImages = selectedTechnique.cameraViews.map(cv => cv.parsedImages);
+        preLoadImages(cameraImages);
+    }, [selectedTechnique]);
+
+    useEffect(() => {
+        if (isPlaying && !indexIntervalId) {
+            const newIntervalId = setInterval(() => goToNextIndex(1, true), playSpeed);
+            setindexIntervalId(newIntervalId);
+        }
+    }, [isPlaying, playSpeed, indexIntervalId, setindexIntervalId])
 
     return (
         selectedTechnique ?
@@ -280,29 +263,14 @@ const PlayPage = () => {
                                     type="search"
                                     value={filterCondition}
                                     onChange={e => setFilterCondition(e.target.value)}
-                                    sx={{width: '280px'}}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position="end">
-                                                <FilterAltIcon sx={{color: 'white'}}/>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    onFocus={(event) => {
-                                        event.target.setAttribute('autocomplete', 'off');
-                                        console.log(event.target.autocomplete);
-                                      }}
+                                    sx={{ width: '280px' }}
+                                    onFocus={(event) => { event.target.setAttribute('autocomplete', 'off') }}
                                 />
                                 <Sidebar techniques={techniques} selectedTechnique={selectedTechnique} setCurrentTechnique={setCurrentTechnique} filterCondition={filterCondition}/>
                             </Stack>
                         </Grid>
                         <Grid item xs={9}>
-                            <Displayer
-                                imageSrc={getCurrentImageUrl()}
-                                enableJoyStickMode={enableJoyStickMode}
-                                setjoyStickParams={setjoyStickParams}
-                                resetjoyStickParams={resetjoyStickParams}
-                            />
+                            <Displayer imageSrc={getCurrentImageUrl()} />
                         </Grid>
                         <Grid xsOffset={3} xs={9}>
                             <ControlPanel
@@ -311,15 +279,14 @@ const PlayPage = () => {
                                 goToNextCamera={goToNextCamera}
                                 goToPrevCamera={goToPrevCamera}
                                 goPlay={goPlay}
-                                isPlaying={!!indexIntervalId}
+                                isPlaying={isPlaying}
                                 canGoNextCamera={canGoNextCamera}
                                 canGoPrevCamera={canGoPrevCamera}
                                 canGoNextIndex={canGoNextIndex}
                                 canGoPrevIndex={canGoPrevIndex}
                                 playSpeed={playSpeed}
-                                enableJoyStickMode={enableJoyStickMode}
-                                joyStickParams={joyStickParams}
                                 defaultSpeed={defaultSpeed}
+                                currentCamera={playStatus.currentCamera}
                             />
                         </Grid>
                     </Grid>
