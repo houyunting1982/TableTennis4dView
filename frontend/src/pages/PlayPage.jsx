@@ -304,7 +304,9 @@ const PlayPage = () => {
                 </Container>
             </>
             :
-            <CircularProgress />
+            <Stack alignItems='center' justifyContent='center' sx={{ height: "100vh" }}>
+                <CircularProgress size={60} />
+            </Stack>
     )
 }
 
