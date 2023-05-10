@@ -57,8 +57,8 @@ const LandingPage = () => {
                         </Grid>
                     </Grid>
                     :
-                    <Stack alignItems="center" sx={{ marginTop: 6 }}>
-                        <CircularProgress />
+                    <Stack alignItems='center' justifyContent='center' sx={{ marginTop: 6, height: '500px' }}>
+                        <CircularProgress size={60} />
                     </Stack>
             }
 

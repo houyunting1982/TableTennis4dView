@@ -18,7 +18,6 @@ export const AuthProvider = ({ children }) => {
     const login = async (username, password) => {
         try {
             const data = await loginAsync(username, password);
-            console.log(data);
             const { name, token, userId } = data.data;
             setUserName(name);
             setToken(token);
@@ -30,36 +29,13 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = async () => {
-        const result = await fakeAsyncLogout();
-        if (result) {
-            console.log(`The User ${userName} has logged out`);
-            setUserName(null);
-            setToken(null);
-            setUserId(null);
-            removeItem('credential');
-            setAuthed(false);
-        }
-    };
-
-    /// Mock Async Login API call.
-    // TODO: Replace with your actual login API Call code
-    const fakeAsyncLogin = async (username, password) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(`Logged In ${username} ${password}`);
-            }, 300);
-        });
-    };
-
-    // Mock Async Logout API call.
-    // TODO: Replace with your actual logout API Call code
-    const fakeAsyncLogout = async () => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve('The user has successfully logged on the server');
-            }, 300);
-        });
+    const logout = () => {
+        console.log(`The User ${userName} has logged out`);
+        setUserName(null);
+        setToken(null);
+        setUserId(null);
+        removeItem('credential');
+        setAuthed(false);
     };
     return (
         <AuthContext.Provider

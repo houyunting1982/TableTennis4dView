@@ -79,18 +79,20 @@ const PlayPage = () => {
 
     const setCurrentTechnique = useCallback((techniqueId) => {
         if (indexIntervalId) {
-            clearInterval(indexIntervalId);
-            setindexIntervalId(0);
+            cleanPlayStatus(indexIntervalId, true)
         }
-        setSelectedTechnique(techniques.find(t => t.id === parseInt(techniqueId)));
+        const technique = techniques.find(t => t.id === parseInt(techniqueId));
+        setSelectedTechnique(technique);
+        const maxCamera = technique.cameraViews.length;
+        const maxIndex = technique.cameraViews[0].parsedImages.length;
+        setBoundary({ maxCamera, maxIndex });
         setPlayStatus(initStatus);
-        setPlaySpeed(20);
+
     }, [indexIntervalId, techniques])
 
     const goToPrevIndex = useCallback((step = 1) => {
         if (indexIntervalId) {
-            clearInterval(indexIntervalId);
-            setindexIntervalId(0);
+            cleanPlayStatus(indexIntervalId, true)
         }
         setPlayStatus(prev => ({
             ...prev,
@@ -100,8 +102,7 @@ const PlayPage = () => {
 
     const goToNextIndex = useCallback((step = 1, loopMode = false) => {
         if (indexIntervalId) {
-            clearInterval(indexIntervalId);
-            setindexIntervalId(0);
+            cleanPlayStatus(indexIntervalId, true)
         }
         setPlayStatus(prev => ({
             ...prev,
@@ -160,6 +161,7 @@ const PlayPage = () => {
     }
 
     const handleKeyPress = useCallback((e) => {
+        console.log(e.code)
         switch (e.code) {
             case 'ArrowRight':
                 goToNextCamera();
@@ -184,24 +186,28 @@ const PlayPage = () => {
                 setIsPlaying(true);
                 break;
             case 'Digit1':
+            case 'Numpad1':
                 if (indexIntervalId) {
                     cleanPlayStatus(indexIntervalId);
                 }
                 setPlaySpeed(defaultSpeed);
                 break;
             case 'Digit2':
+            case 'Numpad2':
                 if (indexIntervalId) {
                     cleanPlayStatus(indexIntervalId);
                 }
                 setPlaySpeed(defaultSpeed * 2);
                 break;
             case 'Digit3':
+            case 'Numpad3':
                 if (indexIntervalId) {
                     cleanPlayStatus(indexIntervalId);
                 }
                 setPlaySpeed(defaultSpeed * 4);
                 break;
             case 'Digit4':
+            case 'Numpad4':
                 if (indexIntervalId) {
                     cleanPlayStatus(indexIntervalId);
                 }
@@ -248,14 +254,14 @@ const PlayPage = () => {
             const newIntervalId = setInterval(() => goToNextIndex(1, true), playSpeed);
             setindexIntervalId(newIntervalId);
         }
-    }, [isPlaying, playSpeed, indexIntervalId, setindexIntervalId])
+    }, [isPlaying, playSpeed, indexIntervalId, goToNextIndex, setindexIntervalId])
 
     return (
         selectedTechnique ?
             <>
                 <Container>
                     <Header title={selectedTechnique.title} playerName={playerName} />
-                    <Grid container alignItems="center" spacing={2}>
+                    <Grid container alignItems="center" spacing={4} minWidth={"1400px"}>
                         <Grid item xs={3}>
                             <Stack spacing={3} alignItems="center">
                                 <SearchBarField
@@ -270,7 +276,12 @@ const PlayPage = () => {
                             </Stack>
                         </Grid>
                         <Grid item xs={9}>
-                            <Displayer imageSrc={getCurrentImageUrl()} />
+                            <Displayer
+                                imageSrc={getCurrentImageUrl()}
+                                currentindex={playStatus.currentIndex}
+                                totalIndex={boundary.maxIndex}
+                                isPlaying={isPlaying}
+                            /> 
                         </Grid>
                         <Grid xsOffset={3} xs={9}>
                             <ControlPanel
