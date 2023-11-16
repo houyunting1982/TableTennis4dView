@@ -27,6 +27,13 @@ public class TechniquesController : ControllerBase
     {
         return (await _mediator.Send(new GetAllTechniquesQuery())).ToList();
     }
+
+    // [HttpPost]
+    // [ProducesResponseType(StatusCodes.Status201Created)]
+    // public async Task<IActionResult> Save()
+    // {
+    //     
+    // }
     
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(Technique), StatusCodes.Status200OK)]
@@ -40,7 +47,7 @@ public class TechniquesController : ControllerBase
 
         return Ok(technique);
     }
-    
+
     [HttpGet("player/{playerId}")]
     [ProducesResponseType(typeof(Technique), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

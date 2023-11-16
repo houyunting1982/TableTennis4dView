@@ -13,7 +13,7 @@ using TableTennis4dView.Application.Mapper;
 using TableTennis4dView.Infrastructure;
 using TableTennis4dView.Infrastructure.Data;
 using TableTennis4dView.Infrastructure.Services;
-
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -122,7 +122,6 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<TableTennis4dViewAppContext>();
     context.Database.EnsureCreated();
-    //context.Database.Migrate();
 }
 
 //app.UseHttpsRedirection();
@@ -134,6 +133,13 @@ app.UseCors("CorsPolicy");
 
 // Added for authentication
 // Maintain middleware order
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Players")),
+    RequestPath = "/Players"
+});
+
 app.UseAuthentication();
 
 app.UseAuthorization();

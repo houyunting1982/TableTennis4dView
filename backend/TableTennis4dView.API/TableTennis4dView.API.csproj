@@ -29,4 +29,8 @@
     <ProjectReference Include="..\TableTennis4dView.Infrastructure\TableTennis4dView.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Players\" />
+  </ItemGroup>
+
 </Project>

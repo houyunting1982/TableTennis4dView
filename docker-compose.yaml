@@ -9,6 +9,9 @@ services:
       - "9999:80"
     depends_on:
       - mssql
+    volumes:
+      #- "/root/Players/:/app/Players/"
+      - "/Users/yuntinghou/tt/TableTennis4dView/backend/TableTennis4dView.API/Players/:/app/Players/"
   frontend:
     build:
       context: frontend
@@ -17,10 +20,10 @@ services:
     ports:
       - "3000:3000"
   mssql:
-    image: mcr.microsoft.com/azure-sql-edge
+    image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
       - 1433:1433
       - 1401:1401
     environment:
-      SA_PASSWORD: "yuntingHou^Passw0rd"
+      SA_PASSWORD: "Giejoo8a!iyeefF"
       ACCEPT_EULA: "Y"

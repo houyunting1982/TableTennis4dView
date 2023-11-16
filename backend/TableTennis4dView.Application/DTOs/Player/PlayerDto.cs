@@ -15,10 +15,6 @@ public class PlayerDtoSlim
 
 public class PlayerDto : PlayerDtoSlim
 {
-    public ICollection<TechniqueDtoSlim> Techniques { get; set; }
-}
-
-public class PlayerDtoFull : PlayerDtoSlim
-{
     public ICollection<TechniqueDto> Techniques { get; set; }
 }
+

@@ -10,10 +10,10 @@ public class TechniqueQueryRepository : QueryRepository<Technique>, ITechniqueQu
 {
     public TechniqueQueryRepository(TableTennis4dViewAppContext context) : base(context) { }
 
-    public async Task<IQueryable<Technique>> GetAllAsync() {
+    public async Task<IQueryable<Technique>> GetAllAsync()
+    {
         return (await GetAll())
-            .Include(i => i.Player)
-            .Include(i => i.CameraViews);
+            .Include(i => i.Player);
     }
 
     public async Task<IQueryable<Technique>> GetByPlayerId(long pId) {

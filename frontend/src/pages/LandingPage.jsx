@@ -43,18 +43,19 @@ const LandingPage = () => {
                     >
                         <Grid item xs={6}>
                             <LandingSidebar
-                                title={'My Content:'}
-                                players={userDetail.players}
-                                allowpurchase={false}
-                            />
-                        </Grid>
-                        <Grid item xs={6}>
-                            <LandingSidebar
                                 title={'Available Content:'}
                                 players={unpurchasedPlayers}
                                 allowpurchase={true}
                             />
                         </Grid>
+                        <Grid item xs={6}>
+                            <LandingSidebar
+                                title={'My Content:'}
+                                players={userDetail.players}
+                                allowpurchase={false}
+                            />
+                        </Grid>
+
                     </Grid>
                     :
                     <Stack alignItems='center' justifyContent='center' sx={{ marginTop: 6, height: '500px' }}>

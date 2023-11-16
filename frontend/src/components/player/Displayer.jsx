@@ -8,6 +8,7 @@ const Screen = styled('img')(({
 }));
 
 const Displayer = ({
+    hasLoaded,
     imageSrc,
     currentindex,
     totalIndex,
@@ -54,11 +55,12 @@ const Displayer = ({
     return (
         <Stack>
             <Container sx={{ position: 'relative', p: "0 !important", backgroundColor: "#000000", width: "1091px", height: "614px" }}>
-                {imageSrc ?
+                {
+                    hasLoaded ?
                     <Screen
                         type='image'
                         id='img'
-                        src={imageSrc}
+                        src={`data:image/jpeg;base64,${imageSrc}`}
                         alt="tabletennis"
                         ref={imageRef}
                         sx={{ cursor: 'none', opacity: getOpacity() }}

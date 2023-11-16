@@ -7,5 +7,5 @@ public class Technique : BaseEntity
     public string Title { get; set; }
     public Player Player { get; set; }
     public long PlayerId { get; set; }
-    public virtual ICollection<CameraView> CameraViews { get; set; }
+    public string SourcePath { get; set; }
 }

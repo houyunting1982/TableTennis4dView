@@ -30,8 +30,4 @@
     <ProjectReference Include="..\TableTennis4dView.Core\TableTennis4dView.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations" />
-  </ItemGroup>
-
 </Project>

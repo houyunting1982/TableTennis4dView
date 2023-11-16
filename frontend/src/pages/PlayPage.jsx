@@ -11,7 +11,8 @@ import { preloadImage } from '../services/utils';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getPlayerById } from '../services/apis/playersApi';
-import { getTechniquesbyPlayerId } from '../services/apis/techniquesApi';
+import JSZip, { forEach } from "jszip";
+import JSZipUtils from 'jszip-utils';
 
 const Container = styled(Stack)({
     textAlign: 'center',
@@ -53,21 +54,26 @@ const PlayPage = () => {
     const [filterCondition, setFilterCondition] = useState("");
     const [playSpeed, setPlaySpeed] = useState(defaultSpeed);
     const [isPlaying, setIsPlaying] = useState(false);
-    const preLoadImages = async (images) => {
-        const imagesPromiseList = [];
-        for (let cIdx = 0; cIdx < images.length; cIdx++) {
-            for (let fIdx = 0; fIdx < images[cIdx].length; fIdx++) {
-                imagesPromiseList.push(preloadImage(images[cIdx][fIdx]));
-            }
-        }
-        try {
-            await Promise.all(imagesPromiseList);
-            console.log("All pictures are loaded");
-        }
-        catch (err) {
-            console.log("Cancelled before finishing loading");
-        }
-    }
+
+    const [playingTechnique, setPlayingTechnique] = useState({});
+    const [indexList, setIndexList] = useState([]);
+    const [hasLoaded, setHasLoaded] = useState(false);
+
+    // const preLoadImages = async (images) => {
+    //     const imagesPromiseList = [];
+    //     for (let cIdx = 0; cIdx < images.length; cIdx++) {
+    //         for (let fIdx = 0; fIdx < images[cIdx].length; fIdx++) {
+    //             imagesPromiseList.push(preloadImage(images[cIdx][fIdx]));
+    //         }
+    //     }
+    //     try {
+    //         await Promise.all(imagesPromiseList);
+    //         console.log("All pictures are loaded");
+    //     }
+    //     catch (err) {
+    //         console.log("Cancelled before finishing loading");
+    //     }
+    // }
 
     const cleanPlayStatus = (indexIntervalId, needToUpdatePlaying = false) => {
         clearInterval(indexIntervalId);
@@ -83,11 +89,7 @@ const PlayPage = () => {
         }
         const technique = techniques.find(t => t.id === parseInt(techniqueId));
         setSelectedTechnique(technique);
-        const maxCamera = technique.cameraViews.length;
-        const maxIndex = technique.cameraViews[0].parsedImages.length;
-        setBoundary({ maxCamera, maxIndex });
         setPlayStatus(initStatus);
-
     }, [indexIntervalId, techniques])
 
     const goToPrevIndex = useCallback((step = 1) => {
@@ -138,10 +140,11 @@ const PlayPage = () => {
     }, [goToNextIndex, setIsPlaying, setindexIntervalId, indexIntervalId, playSpeed]);
 
     const getCurrentImageUrl = () => {
-        if (!selectedTechnique) {
+        if (!hasLoaded) {
             return null;
         }
-        return selectedTechnique.cameraViews[playStatus.currentCamera].parsedImages[playStatus.currentIndex];
+        const key = indexList[playStatus.currentCamera];
+        return playingTechnique[key][playStatus.currentIndex];
     }
 
     const canGoPrevIndex = () => {
@@ -227,26 +230,61 @@ const PlayPage = () => {
         };
     }, [handleKeyPress]);
 
+    const getTechniquesAsync = async (sourcePath) => {
+        JSZipUtils.getBinaryContent(sourcePath, function(err, data) {
+            if(err) {
+                throw err; 
+            }
+            JSZip.loadAsync(data).then(async extractedFiles => {
+                    const taskMap = new Map();
+                    extractedFiles.forEach((relativePath, file) => {
+                      if (file.dir || !file.name.endsWith('.jpg') || file.name.startsWith('__MACOSX')) {
+                        return;
+                      }
+                      const contentTask = file.async("base64");
+                      taskMap.set(file.name.split("/")[1], contentTask);
+                    });
+            
+                    await Promise.all(taskMap.values());
+
+                    const sortedTaskMap = new Map([...taskMap].sort());
+                    const techniques = {};
+
+                    // Sync load the value... Need a better refactoring
+                    for (let m of sortedTaskMap) {
+                        const key = m[0].split("_")[0];
+                        const value = await m[1];
+                        techniques[key] = techniques[key] || [];
+                        techniques[key].push(value)
+                    }
+
+                    const keys = Object.keys(techniques);
+                    const maxCamera = keys.length;
+                    const maxIndex = techniques[keys[0]].length;
+
+                    setPlayingTechnique(techniques);
+                    setBoundary({ maxCamera, maxIndex });
+                    setIndexList(keys);
+                    setHasLoaded(true);
+                    console.log("All pictures are loaded");
+            });
+        });
+    }
+
     useEffect(() => {
-        const init = async () => {
-            const playerData = await getPlayerById(playerId, token);
-            setPlayerName(`${playerData.data.firstName} ${playerData.data.lastName}`);
-            const techniquesData = await getTechniquesbyPlayerId(playerId, token);
-            setTechniques(techniquesData.data)
-            setSelectedTechnique(techniquesData.data[0]);
-        }
-        init();
+        getPlayerById(playerId, token).then(response => {
+            setPlayerName(`${response.data.firstName} ${response.data.lastName}`);
+            setTechniques(response.data.techniques)
+            setSelectedTechnique(response.data.techniques[0]);
+        })
     }, [setPlayerName, setTechniques, playerId, token]);
 
     useEffect(() => {
         if (!selectedTechnique) {
             return;
         }
-        const maxCamera = selectedTechnique.cameraViews.length;
-        const maxIndex = selectedTechnique.cameraViews[0].parsedImages.length;
-        setBoundary({ maxCamera, maxIndex });
-        const cameraImages = selectedTechnique.cameraViews.map(cv => cv.parsedImages);
-        preLoadImages(cameraImages);
+        setHasLoaded(false);
+        getTechniquesAsync(selectedTechnique.sourcePath);
     }, [selectedTechnique]);
 
     useEffect(() => {
@@ -277,11 +315,12 @@ const PlayPage = () => {
                         </Grid>
                         <Grid item xs={9}>
                             <Displayer
+                                hasLoaded={hasLoaded}
                                 imageSrc={getCurrentImageUrl()}
                                 currentindex={playStatus.currentIndex}
                                 totalIndex={boundary.maxIndex}
                                 isPlaying={isPlaying}
-                            /> 
+                            />
                         </Grid>
                         <Grid xsOffset={3} xs={9}>
                             <ControlPanel

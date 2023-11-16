@@ -22,7 +22,6 @@ public class PlayerQueryRepository : QueryRepository<Player>, IPlayerQueryReposi
         var user = await _userManager.Users
             .Include(u => u.Players)
             .ThenInclude(p => p.Techniques)
-            .ThenInclude(t => t.CameraViews)
             .FirstOrDefaultAsync(x => x.Id == uId);
         return user?.Players ?? Enumerable.Empty<Player>();
     }
