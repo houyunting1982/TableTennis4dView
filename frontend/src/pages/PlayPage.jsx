@@ -7,19 +7,19 @@ import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 import ControlPanel from '../components/player/ControlPanel';
 
-import { preloadImage } from '../services/utils';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { getPlayerById } from '../services/apis/playersApi';
 import JSZip, { forEach } from "jszip";
 import JSZipUtils from 'jszip-utils';
 
-const Container = styled(Stack)({
+const CustomizedStack = styled(Stack)({
     textAlign: 'center',
     maxWidth: '1600px',
     minWidth: '1200px',
     margin: '100px auto',
-    padding: '0 50px'
+    padding: '0 50px',
+    overflow: 'hidden'
 });
 
 const SearchBarField = styled(TextField)({
@@ -58,22 +58,6 @@ const PlayPage = () => {
     const [playingTechnique, setPlayingTechnique] = useState({});
     const [indexList, setIndexList] = useState([]);
     const [hasLoaded, setHasLoaded] = useState(false);
-
-    // const preLoadImages = async (images) => {
-    //     const imagesPromiseList = [];
-    //     for (let cIdx = 0; cIdx < images.length; cIdx++) {
-    //         for (let fIdx = 0; fIdx < images[cIdx].length; fIdx++) {
-    //             imagesPromiseList.push(preloadImage(images[cIdx][fIdx]));
-    //         }
-    //     }
-    //     try {
-    //         await Promise.all(imagesPromiseList);
-    //         console.log("All pictures are loaded");
-    //     }
-    //     catch (err) {
-    //         console.log("Cancelled before finishing loading");
-    //     }
-    // }
 
     const cleanPlayStatus = (indexIntervalId, needToUpdatePlaying = false) => {
         clearInterval(indexIntervalId);
@@ -297,7 +281,7 @@ const PlayPage = () => {
     return (
         selectedTechnique ?
             <>
-                <Container>
+                <CustomizedStack >
                     <Header title={selectedTechnique.title} playerName={playerName} />
                     <Grid container alignItems="center" spacing={4} minWidth={"1400px"}>
                         <Grid item xs={3}>
@@ -340,7 +324,7 @@ const PlayPage = () => {
                             />
                         </Grid>
                     </Grid>
-                </Container>
+                </CustomizedStack>
             </>
             :
             <Stack alignItems='center' justifyContent='center' sx={{ height: "100vh" }}>

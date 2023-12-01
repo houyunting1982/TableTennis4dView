@@ -64,7 +64,7 @@ const style = {
 
 
 const LandingSidebar = ({ title, players, allowpurchase }) => {
-    let history = useHistory();
+    const history = useHistory();
     const { userId, token } = useAuth();
     const handlePurchase = async () => {
         await AddPlayerToUser(userId, selectedPlayer.id, token);

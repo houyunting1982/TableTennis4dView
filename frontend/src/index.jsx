@@ -7,6 +7,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import { AuthProvider } from './hooks/useAuth';
 import ProtectedRoute from './components/route/ProtectedRoute';
+import AdminPage from './pages/AdminPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -23,6 +24,7 @@ root.render(
                         path='/technique/:playerId'
                         component={PlayPage}
                     />
+                    <ProtectedRoute path='/admin' component={AdminPage} />
                 </Switch>
             </AuthProvider>
         </Router>

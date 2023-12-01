@@ -1,11 +1,23 @@
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, Grid, Menu, MenuItem, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React from 'react';
 import KillerspinLogo from '../../asserts/images/killerspin-logo.svg';
 import { useAuth } from '../../hooks/useAuth';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const LandingHeader = () => {
     const { logout, userName } = useAuth();
+    const history = useHistory();
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = (category) => {
+        history.push(`/admin/${category}`);
+        setAnchorEl(null);
+    };
     return (
         <Grid
             container
@@ -38,6 +50,19 @@ const LandingHeader = () => {
                     <Typography variant='h5' color={'white'}>
                         Account: {userName}
                     </Typography>
+                    <div>
+                        <Typography variant='h5' color={'white'} onClick={handleClick} style={{cursor: 'pointer'}}>
+                            Admin
+                        </Typography>
+                        <Menu
+                            id="basic-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                        >
+                            <MenuItem onClick={() => handleClose('players')}>Players</MenuItem>
+                            <MenuItem onClick={() => handleClose('techniques')}>Techniques</MenuItem>
+                        </Menu>
+                    </div>
                     <Typography
                         as={Button}
                         variant='h5'
